@@ -2,7 +2,7 @@ NAME = rt
 
 SRCS = \
 	main.cpp \
-	glfw_utils.cpp \
+	Application.class.cpp \
 	pipeline_initialize.cpp \
 	glad.c \
 
@@ -19,9 +19,9 @@ GLFW_SRCS = $(ABS_DIR)/glfw-3.3.4
 GLFW_LIBS = $(ABS_DIR)/glfw
 GLAD = $(ABS_DIR)/glad
 CFLAGS_GLFW = $(shell export PKG_CONFIG_PATH=$(ABS_DIR)/glfw/lib/pkgconfig && pkg-config --cflags glfw3)
-CFLAGS = -Wall -Wextra -Werror -g $(shell pkg-config --cflags gl) $(CFLAGS_GLFW) 
+CFLAGS = -Wall -Wextra -Werror -g -std=c++17 -O2 $(CFLAGS_GLFW) 
 LIBS_GLFW = $(shell export PKG_CONFIG_PATH=$(ABS_DIR)/glfw/lib/pkgconfig && pkg-config --static --libs glfw3)
-LDFLAGS = -lkaf $(LIBS_GLFW) "-Wl,-rpath,$(GLFW_LIBS)/lib"
+LDFLAGS = -lkaf $(LIBS_GLFW) "-Wl,-rpath,$(GLFW_LIBS)/lib" -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 SLASH = /
 MKDIR := mkdir -p
 RM = /bin/rm -rf
@@ -50,6 +50,9 @@ test:
 
 dependencies:
 	sudo apt install xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
+vulkan:
+	sudo apt install vulkan-tools libvulkan-dev vulkan-validationlayers-dev spirv-tools libxxf86vm-dev libxi-dev
 
 $(GLFW_LIBS):
 	@if [ ! -d $(GLFW_SRCS) ]; then \

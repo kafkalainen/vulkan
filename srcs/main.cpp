@@ -1,24 +1,39 @@
-#include <iostream>
 #include "../headers/rt.hpp"
+#include "../libkaf/glm/glm/vec4.hpp"
+#include "../libkaf/glm/glm/mat4x4.hpp"
+
+// int main(void)
+// {
+//     GLFWwindow *window;
+
+//     std::cout << "hello world\n";
+//     init_glfw();
+//     create_glfw_window(&window);
+
+//     uint32_t extensionCount = 0;
+//     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+//     std::cout << extensionCount << " extensions supported\n";
+
+//     while (!glfwWindowShouldClose(window))
+//     {
+//         glfwSwapBuffers(window);
+//         glfwPollEvents();
+//     }
+//     glfwDestroyWindow(window);
+// 	glfwTerminate();
+// 	exit(EXIT_SUCCESS);
+// }
 
 int main(void)
 {
-    GLFWwindow *window;
-    GLuint texture;
+    Application app;
 
-    std::cout << "hello world\n";
-    init_glfw();
-    create_glfw_window(&window);
-    initialize_gl(&texture);
-
-    while (!glfwWindowShouldClose(window))
-    {
-        glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+    try {
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
-    glfwDestroyWindow(window);
-	glfwTerminate();
-	exit(EXIT_SUCCESS);
+
+    return EXIT_SUCCESS;
 }
