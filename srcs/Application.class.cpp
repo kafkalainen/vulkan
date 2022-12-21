@@ -58,7 +58,7 @@ void Application::mainLoop()
 
 void Application::cleanup()
 {
-    vkDestroyInstance(instance, nullptr);
+    vkDestroyInstance(m_instance, nullptr);
 
     glfwDestroyWindow(m_window);
 
