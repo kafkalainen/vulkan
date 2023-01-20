@@ -1,1 +1,8 @@
 .vscode
+objs/
+libkaf/obj/
+glad/
+glfw-3.3.4/
+glfw/
+libkaf/libkaf.a
+rt

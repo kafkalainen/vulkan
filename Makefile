@@ -6,6 +6,10 @@ SRCS = \
 	pipeline_initialize.cpp \
 	glad.c \
 
+SHADERS = \
+	shader.frag \
+	shader.vert
+
 HEADERS = \
 	headers/rt.hpp \
 	libkaf/libkaf.h \
@@ -37,22 +41,26 @@ OPENGL = $(shell pkg-config --libs gl)
 
 S = srcs
 O = objs
+G = shaders
+P = spirv
 LIBKAF = libkaf$(SLASH)libkaf.a
 SRC = $(addprefix $S$(SLASH), $(SRCS))
 OBJ = $(SRC:$S%=$O%.o)
+GLSL = $(addprefix $G$(SLASH), $(SHADERS))
+SPV = $(GLSL:$G%=$P%.spv)
 
 .PHONY: all clean fclean re
 
 all: $(NAME)
 
-test:
-	@echo $(ABS_DIR)
-
 dependencies:
 	sudo apt install xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
 vulkan:
-	sudo apt install vulkan-tools libvulkan-dev vulkan-validationlayers-dev spirv-tools libxxf86vm-dev libxi-dev
+	wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+	sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
+	sudo apt update
+	sudo apt install vulkan-sdk vulkan-tools libvulkan-dev vulkan-validationlayers-dev spirv-tools libxxf86vm-dev libxi-dev
 
 $(GLFW_LIBS):
 	@if [ ! -d $(GLFW_SRCS) ]; then \
@@ -73,17 +81,24 @@ $(GLAD):
 
 $O:
 	$(MKDIR) $@
-	$(MKDIR) $@/utils
 
 $(OBJ): | $O
 
 $(OBJ): $O%.o: $S% $(HEADERS)
 	$(CC) -c -o $@ $(CFLAGS) $(INCLUDES) $<
 
+$P:
+	$(MKDIR) $@
+
+$(SPV): | $P
+
+$(SPV): $P%.spv: $G%
+	glslc $< -o $@
+
 $(LIBKAF):
 	make -C libkaf
 
-$(NAME): $(LIBKAF) $(GLFW_LIBS) $(GLAD) $(OBJ)
+$(NAME): $(LIBKAF) $(GLFW_LIBS) $(GLAD) $(SPV) $(OBJ)
 	$(CC) -o $@ $(INCLUDES) $(LIBS) $(CFLAGS) $(OBJ) $(LDFLAGS)
 	@echo $(GREEN)Compiled executable $(NAME).
 
@@ -91,9 +106,13 @@ cleanobj:
 ifneq ($(wildcard $(OBJ)),)
 	@$(RM) $(wildcard $(OBJ))
 endif
+ifneq ($(wildcard $(SPV)),)
+	@$(RM) $(wildcard $(SPV))
+endif
 
 cleanobjdir: cleanobj
 	@$(RM) $O
+	@$(RM) $P
 
 clean: cleanobjdir
 	@if [ -d "$(GLFW_LIBS)" ] ; then \
