@@ -53,8 +53,10 @@ class Application
         VkInstance                  m_instance;
         VkDebugUtilsMessengerEXT    m_debugMessenger;
         VkSurfaceKHR                m_surface;
+
         VkPhysicalDevice            m_physicalDevice = VK_NULL_HANDLE;
         VkDevice                    m_device;
+
         VkQueue                     m_graphicsQueue;
         VkQueue                     m_presentQueue;
 
@@ -63,6 +65,10 @@ class Application
         VkFormat                    m_swapChainImageFormat;
         VkExtent2D                  m_swapChainExtent;
         std::vector<VkImageView>    m_swapChainImageViews;
+
+        VkRenderPass                m_renderPass;
+        VkPipelineLayout            m_pipelineLayout;
+        VkPipeline                  m_graphicsPipeline;
 
         static VkResult CreateDebugUtilsMessengerEXT(
                 VkInstance instance,
@@ -88,6 +94,7 @@ class Application
         void createLogicalDevice();
         void createSurface();
         void createSwapChain();
+        void createRenderPass();
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
                 VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

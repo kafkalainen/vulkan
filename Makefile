@@ -3,7 +3,6 @@ NAME = rt
 SRCS = \
 	main.cpp \
 	Application.class.cpp \
-	pipeline_initialize.cpp \
 	glad.c \
 
 SHADERS = \
